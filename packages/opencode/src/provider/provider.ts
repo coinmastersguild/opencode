@@ -48,6 +48,7 @@ import {
 } from "gitlab-ai-provider"
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers"
 import { GoogleAuth } from "google-auth-library"
+import { createPioneer } from "./pioneer"
 import { ProviderTransform } from "./transform"
 import { Installation } from "../installation"
 import { ModelID, ProviderID } from "./schema"
@@ -132,6 +133,8 @@ export namespace Provider {
     "gitlab-ai-provider": createGitLab,
     // @ts-ignore (TODO: kill this code so we dont have to maintain it)
     "@ai-sdk/github-copilot": createGitHubCopilotOpenAICompatible,
+    // Pioneer Server — forces non-streaming for vLLM reasoning model compat
+    "pioneer": createPioneer,
   }
 
   type CustomModelLoader = (sdk: any, modelID: string, options?: Record<string, any>) => Promise<any>
