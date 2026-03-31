@@ -1250,10 +1250,14 @@ export namespace Provider {
         const chunkAbortCtl = typeof chunkTimeout === "number" && chunkTimeout > 0 ? new AbortController() : undefined
         const signals: AbortSignal[] = []
 
-        if (opts.signal) signals.push(opts.signal)
-        if (chunkAbortCtl) signals.push(chunkAbortCtl.signal)
-        if (options["timeout"] !== undefined && options["timeout"] !== null && options["timeout"] !== false)
-          signals.push(AbortSignal.timeout(options["timeout"]))
+        // Pioneer provider: skip all timeout signals — reasoning models need minutes
+        const isPioneer = model.api.npm === "pioneer"
+        if (!isPioneer) {
+          if (opts.signal) signals.push(opts.signal)
+          if (chunkAbortCtl) signals.push(chunkAbortCtl.signal)
+          if (options["timeout"] !== undefined && options["timeout"] !== null && options["timeout"] !== false)
+            signals.push(AbortSignal.timeout(options["timeout"]))
+        }
 
         const combined = signals.length === 0 ? null : signals.length === 1 ? signals[0] : AbortSignal.any(signals)
         if (combined) opts.signal = combined

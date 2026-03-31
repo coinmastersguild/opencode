@@ -15,7 +15,15 @@ export function createPioneer(options: Record<string, any> = {}) {
   const originalFetch = options.fetch ?? globalThis.fetch
 
   const pioneerFetch = async (input: any, init?: any) => {
-    // Remove short timeout signals -- pioneer-server manages timeouts
+    const url = typeof input === "string" ? input : input?.url || "unknown"
+    if (url.includes("/chat/completions")) {
+      try {
+        const body = JSON.parse(init?.body || "{}")
+        console.error(`[pioneer-fetch] model=${body.model} stream=${body.stream} tools=${body.tools?.length || 0}`)
+      } catch {}
+    }
+
+    // Remove abort signals -- reasoning models need minutes, not seconds
     if (init?.signal) {
       delete init.signal
     }
@@ -23,11 +31,13 @@ export function createPioneer(options: Record<string, any> = {}) {
     return originalFetch(input, init)
   }
 
+  // Spread options first, then override with our values (order matters!)
+  const { fetch: _discardFetch, baseURL: _b, apiKey: _a, name: _n, ...rest } = options
   return createOpenAICompatible({
+    ...rest,
     name: options.name || "pioneer",
     baseURL,
     apiKey,
-    ...options,
     fetch: pioneerFetch,
   })
 }
