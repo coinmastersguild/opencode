@@ -7,8 +7,8 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
 
 export function createPioneer(options: Record<string, any> = {}) {
-  const baseURL = options.baseURL || "http://localhost:9100/api/v1"
-  const apiKey = options.apiKey || "dummy-dev"
+  const baseURL = options.baseURL || "https://alpha.pioneers.dev/api/v1"
+  const apiKey = options.apiKey || "not-needed"
 
   // Wrap fetch to remove any abort signals with short timeouts
   // Reasoning models need 60-120s before first token
